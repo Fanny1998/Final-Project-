@@ -1,0 +1,77 @@
+#Menjalankan Node2vec 
+
+node2vec = Node2Vec(g, dimensions=20,
+walk_length=16, num_walks=100, workers=2)
+model = node2vec.fit(window=10, min_count=1)
+
+  #Node yang similar dengan melayu 
+    for node, _ in model.most_similar('Melayu '):
+    print(node)
+  # Node yang similar dengan Kutai 
+    for node, _ in model.most_similar('kutai '):
+    print(node)
+  # Node yan simlar dengan Kerinci  
+    for node, _ in model.most_similar('kerinci '):
+    print(node)
+    
+#Menjalankan algoritma 
+
+import pandas as pd
+import networkx as nx
+df = pd.read_csv('try.csv')
+    #bahasa
+      g = nx.from_pandas_edgelist(df, source='suku', target='bahasa')
+   #lokasi
+      df2= df[['suku', 'lokasi']].dropna(axis = 0, how ='any')
+      mylist = df2.values.tolist()
+      g.add_edges_from(mylist,weight=1, label="lokasi")
+ labels = [i for i in dict(g.nodes).keys()]
+ labels = {i:i for i in dict(g.nodes).keys()}
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+fig, ax = plt.subplots(figsize=(12,5))
+layout = nx.spring_layout(g,iterations=50)
+nx.draw_networkx_nodes(g, layout, ax = ax, labels=True)
+nx.draw_networkx_edges(g, layout, ax=ax)
+_ = nx.draw_networkx_labels(g, layout, labels, ax=ax)
+
+fig, ax = plt.subplots(figsize=(12,5))
+layout = nx.spring_layout(g,iterations=50)
+nx.draw_networkx_nodes(g, layout, ax = ax, labels=True)
+nx.draw_networkx_edges(g, layout, ax=ax)
+_ = nx.draw_networkx_labels(g, layout, labels, ax=ax)
+
+sukupopuler = [suku for suku in df.suku if
+g.degree(suku) > 3]
+nx.draw_networkx_nodes(g, layout,
+nodelist=sukupopuler, node_color='orange',
+node_size=150)
+print (sukupopuler)
+
+fig, ax = plt.subplots(figsize=(12,5))
+layout = nx.spring_layout(g,iterations=50)
+nx.draw_networkx_nodes(g, layout, ax = ax, labels=True)
+nx.draw_networkx_edges(g, layout, ax=ax)
+_ = nx.draw_networkx_labels(g, layout, labels, ax=ax)
+
+#Visualisasi TSNE 
+
+from sklearn.manifold import TSNE
+import numpy as np
+#embedding suku
+nodesuku = [x for x in df.suku]
+nodesuku
+
+embeddings = np.array([model.wv[x] for x in nodesuku])
+embeddings
+
+warna_lokasi = {
+' Indonesia ': 'lightblue',
+'Banten': 'b',
+'Bali_ lombok': 'r',
+'papua': 'teal'}
+
+
+
+
